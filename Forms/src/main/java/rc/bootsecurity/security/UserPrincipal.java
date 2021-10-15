@@ -10,29 +10,30 @@ import java.util.Collection;
 import java.util.List;
 
 public class UserPrincipal implements UserDetails {
-    private User user;
+    private final User user;
 
-    public UserPrincipal(User user){
+    public UserPrincipal(User user) {
         this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
 
-        // Extract list of permissions (name)
+        List<GrantedAuthority> authorityList = new ArrayList<>();
+
         this.user.getPermissionList().forEach(p -> {
-            GrantedAuthority authority = new SimpleGrantedAuthority(p);
-            authorities.add(authority);
+            GrantedAuthority  authority = new SimpleGrantedAuthority(p);
+            authorityList.add(authority);
         });
 
-        // Extract list of roles (ROLE_name)
+
         this.user.getRoleList().forEach(r -> {
-            GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + r);
-            authorities.add(authority);
+            GrantedAuthority  authority = new SimpleGrantedAuthority("ROLE_"+r);
+            authorityList.add(authority);
         });
 
-        return authorities;
+
+        return authorityList;
     }
 
     @Override

@@ -3,17 +3,19 @@ package rc.bootsecurity.controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import rc.bootsecurity.db.UserRepository;
 import rc.bootsecurity.model.User;
+import rc.bootsecurity.repository.UserRepository;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("api/public")
 public class PublicRestApiController {
-    private UserRepository userRepository;
 
-    public PublicRestApiController(UserRepository userRepository){
+    private  final UserRepository userRepository;
+
+
+    public PublicRestApiController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -26,6 +28,7 @@ public class PublicRestApiController {
     public String test2(){
         return "API Test 2";
     }
+
 
     @GetMapping("users")
     public List<User> users(){

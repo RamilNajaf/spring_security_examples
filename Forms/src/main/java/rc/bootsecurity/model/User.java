@@ -1,16 +1,24 @@
 package rc.bootsecurity.model;
 
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+
 import javax.persistence.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Entity
+@Data
+@NoArgsConstructor
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String username;
@@ -18,11 +26,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private int active;
-
-    private String roles = "";
-
-    private String permissions = "";
+    private int active = 1;
 
     public User(String username, String password, String roles, String permissions){
         this.username = username;
@@ -31,42 +35,18 @@ public class User {
         this.permissions = permissions;
         this.active = 1;
     }
+    private String roles;
 
-    protected User(){}
+    private String permissions;
 
-    public long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public int getActive() {
-        return active;
-    }
-
-    public String getRoles() {
-        return roles;
-    }
-
-    public String getPermissions() {
-        return permissions;
-    }
-
-    public List<String> getRoleList(){
-        if(this.roles.length() > 0){
+    public List<String> getRoleList() {
+        if (this.roles.length() > 0) {
             return Arrays.asList(this.roles.split(","));
         }
         return new ArrayList<>();
     }
-
-    public List<String> getPermissionList(){
-        if(this.permissions.length() > 0){
+    public List<String> getPermissionList() {
+        if (this.permissions.length() > 0) {
             return Arrays.asList(this.permissions.split(","));
         }
         return new ArrayList<>();
