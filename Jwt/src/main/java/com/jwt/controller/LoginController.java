@@ -3,6 +3,8 @@ package com.jwt.controller;
 
 import com.jwt.request.LoginRequest;
 import com.jwt.utils.TokenManager;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
+@Slf4j
 @RequestMapping("/login")
 public class LoginController {
 
@@ -33,7 +36,9 @@ public class LoginController {
 
             return ResponseEntity.ok(tokenManager.generateToken(loginRequest.getUsername()));
         } catch (Exception e) {
-            throw e;
+            log.error("Exception:" + e);
+            return new ResponseEntity<>("User is not found with these credentials", HttpStatus.NOT_FOUND);
+            //or handle above exception at restControllerAdvice (BadCredentialException)
         }
     }
 }

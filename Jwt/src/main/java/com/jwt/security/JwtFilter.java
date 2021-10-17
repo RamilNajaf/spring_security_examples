@@ -1,8 +1,13 @@
 package com.jwt.security;
 
+import com.jwt.entity.User;
+import com.jwt.repostiroy.UserRepository;
 import com.jwt.utils.Constants;
 import com.jwt.utils.TokenManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -14,11 +19,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
+    @Autowired
+    private UserRepository userRepository;
 
     private final TokenManager tokenManager;
+
 
     public JwtFilter(TokenManager tokenManager) {
         this.tokenManager  = tokenManager;
@@ -45,8 +54,17 @@ public class JwtFilter extends OncePerRequestFilter {
         if (username != null && token != null
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (tokenManager.tokenValidate(token)) {
+
+                User user= userRepository.findByUsername(username);
+                List<GrantedAuthority> authorityList = new ArrayList<>();
+                user.getRoleList().forEach(r -> {
+                    GrantedAuthority  authority = new SimpleGrantedAuthority("ROLE_"+r);
+                    authorityList.add(authority);
+                });
+
+
                 UsernamePasswordAuthenticationToken upassToken =
-                        new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+                        new UsernamePasswordAuthenticationToken(username, null, authorityList);
                 upassToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(upassToken);
             }
@@ -55,4 +73,6 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
 
     }
+
+
 }
